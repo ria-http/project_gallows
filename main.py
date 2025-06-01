@@ -71,11 +71,12 @@ def guess_letter(letter):
     if set(secret_word) <= set(guessed_letters):
         wins += 1
         messagebox.showinfo("Победа!", "Вы угадали слово!")
+        new_game()
     elif attempts_left == 0:
         losses += 1
         word_label.config(text="   ".join(secret_word))
         messagebox.showinfo("Проигрыш", f"Слово было: {secret_word}")
-
+        new_game()
 
 def new_game():
     global secret_word, guessed_letters, attempts_left
@@ -100,15 +101,15 @@ def restart_game():
 # Создание окна
 root = tk.Tk()
 root.title("Виселица")
-root.geometry("700x800")
+root.state('zoomed')
 root.configure(bg=BG_COLOR)
 
 # Виджеты
 hangman_canvas = tk.Canvas(root, width=400, height=350, bg=BG_COLOR)
-hangman_canvas.pack(pady=20)
+hangman_canvas.pack(pady=10)
 
 word_label = tk.Label(root, font=("Arial", 42), bg=BG_COLOR)
-word_label.pack(pady=20)
+word_label.pack(pady=10)
 
 stats_label = tk.Label(root, font=("Arial", 16), bg=BG_COLOR)
 stats_label.pack()
@@ -117,7 +118,7 @@ attempts_label = tk.Label(root, font=("Arial", 16), bg=BG_COLOR)
 attempts_label.pack()
 
 used_letters_label = tk.Label(root, font=("Arial", 16), bg=BG_COLOR)
-used_letters_label.pack(pady=10)
+used_letters_label.pack(pady=5)
 
 # Кнопки букв (3 ряда)
 keyboard_frames = []
@@ -142,25 +143,6 @@ for i, row in enumerate(letters_rows):
         )
         btn.pack(side="left", padx=2, pady=2)
         letter_buttons.append(btn)
-
-# Кнопки управления
-new_game_btn = tk.Button(
-    root,
-    text="Новая игра",
-    font=("Arial", 14),
-    bg="#dda0dd",
-    command=new_game
-)
-new_game_btn.pack(pady=10)
-
-restart_btn = tk.Button(
-    root,
-    text="Начать сначала",
-    font=("Arial", 14),
-    bg="#9370db",
-    command=restart_game
-)
-restart_btn.pack(pady=10)
 
 # Начало игры
 new_game()
