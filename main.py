@@ -2,19 +2,23 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 
-# Настройки игры
-words = ["питон", "программа", "компьютер", "клавиатура", "монитор", "мышка"]
+
+words = ["питон", "программа", "компьютер", "клавиатура", "монитор", "мышка"
+        "алгоритм", "байт", "бит", "браузер", "веб","вирус", "диск", "драйвер",
+         "интернет", "кабель", "код", "курсор", "лан", "линк", "массив", "модем",
+         "память", "пароль", "пиксель", "порт", "поиск", "процесс", "работа",
+         "сервер", "система", "сканер", "сокет", "софт", "спам", "трафик", "файл",
+         "фича", "флешка", "хакер", "цикл", "чарт", "чип", "шрифт", "экран"]
 max_attempts = 7
 
-# Цвета
-BG_COLOR = "#000000"  # Чёрный фон
+BG_COLOR = "#000000"
 BUTTON_COLOR = "#000000"
-CORRECT_COLOR = "#8696FF"  # Зелёный для правильных букв
-WRONG_COLOR = "#FF3B8B"   # Красный для неправильных
-TEXT_COLOR = "#ffffff"    # Белый текст
-DRAWING_COLOR = "#ffffff" # Белый цвет для рисунка
+CORRECT_COLOR = "#8696FF"  # правильных букв
+WRONG_COLOR = "#FF3B8B"   # для неправильных
+TEXT_COLOR = "#ffffff"
+DISABLED_TEXT_COLOR = "#ffffff"  # для отключенных кнопок
+DRAWING_COLOR = "#ffffff"
 
-# Инициализация игры
 secret_word = ""
 guessed_letters = []
 attempts_left = max_attempts
@@ -22,7 +26,6 @@ wins = 0
 losses = 0
 
 
-# Функции
 def draw_hangman(step):
     hangman_canvas.delete("all")
     if step >= 1: hangman_canvas.create_line(100, 320, 280, 320, width=8, fill=DRAWING_COLOR)
@@ -42,8 +45,6 @@ def update_display():
     word_label.config(text="   ".join([l if l in guessed_letters else "_" for l in secret_word]))
     stats_label.config(text=f"Побед: {wins}  Поражений: {losses}")
     attempts_label.config(text=f"Попыток осталось: {attempts_left}")
-    used_letters = " ".join(sorted(guessed_letters))
-    used_letters_label.config(text=f"Использованные буквы: {used_letters}")
 
 
 def reset_buttons():
@@ -54,23 +55,25 @@ def reset_buttons():
 def guess_letter(letter):
     global attempts_left, wins, losses
 
-    if letter in guessed_letters: return
+    if letter in guessed_letters:
+        return
 
     guessed_letters.append(letter)
     correct = letter in secret_word
 
     for btn in letter_buttons:
         if btn['text'].lower() == letter:
-            btn.config(bg=CORRECT_COLOR if correct else WRONG_COLOR, state=tk.DISABLED)
+            color = CORRECT_COLOR if correct else WRONG_COLOR
+            btn.config(bg=color, fg=DISABLED_TEXT_COLOR, state=tk.DISABLED)
             break
 
     if not correct:
         attempts_left -= 1
-        draw_hangman(max_attempts - attempts_left + 1)
+        draw_hangman(max_attempts - attempts_left)
 
     update_display()
 
-    if set(secret_word) <= set(guessed_letters):
+    if all(letter in guessed_letters for letter in secret_word):
         wins += 1
         messagebox.showinfo("Победа!", "Вы угадали слово!")
         new_game()
@@ -79,6 +82,7 @@ def guess_letter(letter):
         word_label.config(text="   ".join(secret_word))
         messagebox.showinfo("Проигрыш", f"Слово было: {secret_word}")
         new_game()
+
 
 def new_game():
     global secret_word, guessed_letters, attempts_left
@@ -89,18 +93,6 @@ def new_game():
     update_display()
     draw_hangman(0)
 
-
-def restart_game():
-    global guessed_letters, attempts_left
-    if not secret_word: return
-    guessed_letters = []
-    attempts_left = max_attempts
-    reset_buttons()
-    update_display()
-    draw_hangman(0)
-
-
-# Создание окна
 root = tk.Tk()
 root.title("Виселица")
 root.state('zoomed')
@@ -108,25 +100,22 @@ root.configure(bg=BG_COLOR)
 
 # Виджеты
 hangman_canvas = tk.Canvas(root, width=400, height=350, bg=BG_COLOR, highlightthickness=0)
-hangman_canvas.pack(pady=10)
+hangman_canvas.pack(pady=(30, 20))
 
 word_label = tk.Label(root, font=("Arial", 42), bg=BG_COLOR, fg=TEXT_COLOR)
-word_label.pack(pady=10)
+word_label.pack(pady=20)
 
-stats_label = tk.Label(root, font=("Arial", 16), bg=BG_COLOR, fg=TEXT_COLOR)
-stats_label.pack()
+stats_label = tk.Label(root, font=("Arial", 18), bg=BG_COLOR, fg=TEXT_COLOR)
+stats_label.pack(pady=10)
 
-attempts_label = tk.Label(root, font=("Arial", 16), bg=BG_COLOR, fg=TEXT_COLOR)
-attempts_label.pack()
-
-used_letters_label = tk.Label(root, font=("Arial", 16), bg=BG_COLOR, fg=TEXT_COLOR)
-used_letters_label.pack(pady=5)
+attempts_label = tk.Label(root, font=("Arial", 18), bg=BG_COLOR, fg=TEXT_COLOR)
+attempts_label.pack(pady=(10, 30))
 
 # Кнопки букв (3 ряда)
 keyboard_frames = []
 for i in range(3):
     frame = tk.Frame(root, bg=BG_COLOR)
-    frame.pack()
+    frame.pack(pady=8)
     keyboard_frames.append(frame)
 
 letters_rows = ["абвгдеёжзий", "клмнопрстуфх", "цчшщъыьэюя"]
@@ -137,16 +126,17 @@ for i, row in enumerate(letters_rows):
         btn = tk.Button(
             keyboard_frames[i],
             text=letter.upper(),
-            font=("Arial", 14),
+            font=("Arial", 14, "bold"),
             width=4,
             height=2,
             bg=BUTTON_COLOR,
             fg=TEXT_COLOR,
-            activebackground="#ffffff",
+            activebackground="#555555",
             activeforeground=TEXT_COLOR,
+            disabledforeground=DISABLED_TEXT_COLOR,
             command=lambda l=letter: guess_letter(l)
         )
-        btn.pack(side="left", padx=2, pady=2)
+        btn.pack(side="left", padx=4, pady=4)
         letter_buttons.append(btn)
 
 # Начало игры
