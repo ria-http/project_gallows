@@ -100,22 +100,22 @@ root.configure(bg=BG_COLOR)
 
 # Виджеты
 hangman_canvas = tk.Canvas(root, width=400, height=350, bg=BG_COLOR, highlightthickness=0)
-hangman_canvas.pack(pady=(30, 20))
+hangman_canvas.pack(pady=(12, 12))
 
 word_label = tk.Label(root, font=("Arial", 42), bg=BG_COLOR, fg=TEXT_COLOR)
-word_label.pack(pady=20)
+word_label.pack(pady=0)
 
 stats_label = tk.Label(root, font=("Arial", 18), bg=BG_COLOR, fg=TEXT_COLOR)
-stats_label.pack(pady=10)
+stats_label.pack(pady=5)
 
 attempts_label = tk.Label(root, font=("Arial", 18), bg=BG_COLOR, fg=TEXT_COLOR)
-attempts_label.pack(pady=(10, 30))
+attempts_label.pack(pady=(5, 15))
 
 # Кнопки букв (3 ряда)
 keyboard_frames = []
 for i in range(3):
     frame = tk.Frame(root, bg=BG_COLOR)
-    frame.pack(pady=8)
+    frame.pack(pady=5)
     keyboard_frames.append(frame)
 
 letters_rows = ["абвгдеёжзий", "клмнопрстуфх", "цчшщъыьэюя"]
